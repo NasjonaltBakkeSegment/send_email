@@ -9,5 +9,12 @@ The `send_email.py` function can then be imported into the parent repository and
 ```
 from send_email import send_email
 
-send_email(recipient, subject, message, send_from='nbs-helpdesk@met.no', server="127.0.0.1")
+recipients = [
+    {'name': 'Luke Marsden', 'email': 'lukem@met.no'},
+    {'name': 'Dr Luke', 'email': 'lhmarsden@hotmail.com'},
+]
+subject = 'Test Email'
+message = 'This is a test message.'
+
+send_email(recipients, subject, message)
 ```
