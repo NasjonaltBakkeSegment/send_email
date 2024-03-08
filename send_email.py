@@ -6,7 +6,7 @@ Send email.
 import smtplib
 from email.message import EmailMessage
 
-def send_email(recipients, subject, message, sender='nbs-helpdesk@met.no', server="127.0.0.1"):
+def send_email(recipients, subject, message, sender='nbs-helpdesk@met.no', server="127.0.0.1", attachment_path=None):
     """
     Send emails to multiple recipients.
 
@@ -31,7 +31,13 @@ def send_email(recipients, subject, message, sender='nbs-helpdesk@met.no', serve
         message_with_name = f"Hi {recipient['name']},\n\n{message}"
         msg.set_content(message_with_name)
 
+        # Adding attachment if provided
+        if attachment_path:
+            with open(attachment_path, 'rb') as attachment:
+                attachment_content = attachment.read()
+                attachment_filename = attachment_path.split('/')[-1]  # Extracting filename from path
+                msg.add_attachment(attachment_content, maintype='application', subtype='octet-stream', filename=attachment_filename)
+
         smtp = smtplib.SMTP(server)
         smtp.send_message(msg)
         smtp.quit()
-
