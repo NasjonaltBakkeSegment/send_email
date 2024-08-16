@@ -11,7 +11,7 @@ from email import encoders
 import yaml
 import os
 
-def email_sender(recipients, subject, body, attachment_path=None):
+def email_sender(recipients, subject, body, attachment_path=None, cc=None):
     """
     Send emails to multiple recipients.
 
@@ -19,6 +19,8 @@ def email_sender(recipients, subject, body, attachment_path=None):
         recipients (list of str): List of email addresses of the recipients.
         subject (str): Subject of the email.
         body (str): Body of the email message.
+        attachment_path (str): Path to the file to be attached to the email.
+        cc (list of str): Optional CC recipient(s) of the email
     """
     # Get the directory of the current script
     script_dir = os.path.dirname(__file__)
@@ -42,6 +44,10 @@ def email_sender(recipients, subject, body, attachment_path=None):
         msg['From'] = sender
         msg['To'] = recipient
 
+        # Add CC header if cc is provided
+        if cc:
+            msg['Cc'] = ', '.join(cc)
+
         msg.attach(MIMEText(body, 'plain'))
 
         if attachment_path:
@@ -60,7 +66,7 @@ def email_sender(recipients, subject, body, attachment_path=None):
         try:
             with smtplib.SMTP_SSL('smtp.gmail.com', 465) as smtp_server:
                 smtp_server.login(sender, password)
-                smtp_server.sendmail(sender, recipient, msg.as_string())
+                smtp_server.sendmail(sender, [recipient] + (cc if cc else []), msg.as_string())
                 print(f"Email sent successfully to {recipient}")
         except smtplib.SMTPException as e:
             print(f"Failed to send email to {recipient}: {e}")
